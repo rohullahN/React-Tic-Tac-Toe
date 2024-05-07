@@ -2,15 +2,25 @@ import { useState } from "react";
 
 export default function Player({ name, symbol }) {
   const [isEditting, setIsEditting] = useState(false);
+  const [playerName, setPlayerName] = useState(name);
 
   const handleEditting = () => {
     setIsEditting((prev) => !prev);
   };
 
-  const playerName = isEditting ? (
-    <input type="text" required value={name}></input>
+  const handleChange = (e) => {
+    setPlayerName(e.target.value);
+  };
+
+  const editablePlayerName = isEditting ? (
+    <input
+      type="text"
+      required
+      value={playerName}
+      onChange={handleChange}
+    ></input>
   ) : (
-    <span className="player-name">{name}</span>
+    <span className="player-name">{playerName}</span>
   );
 
   const buttonText = isEditting ? "Save" : "Edit";
@@ -18,7 +28,7 @@ export default function Player({ name, symbol }) {
   return (
     <li>
       <span className="player">
-        {playerName}
+        {editablePlayerName}
         <span className="player-symbol">{symbol}</span>
       </span>
       <button onClick={handleEditting}>{buttonText}</button>
