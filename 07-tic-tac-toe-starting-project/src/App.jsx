@@ -1,7 +1,14 @@
 import Player from "./components/Player.jsx";
 import Gameboard from "./components/Gameboard.jsx";
 import Log from "./components/Log.jsx";
+import { WINNING_COMBINATIONS } from "./WinningCombinations.js";
 import { useState } from "react";
+
+const initialGameboard = [
+  [null, null, null],
+  [null, null, null],
+  [null, null, null],
+];
 
 function getCurrentPlayer(currentGameState) {
   let currentPlayer = "X";
@@ -16,6 +23,30 @@ function getCurrentPlayer(currentGameState) {
 function App() {
   const [gameTurns, setGameTurns] = useState([]);
   const currentPlayer = getCurrentPlayer(gameTurns);
+
+  let gameBoard = JSON.parse(JSON.stringify(initialGameboard));
+
+  for (const turn of gameTurns) {
+    const { square, player } = turn;
+    const { row, col } = square;
+
+    gameBoard[row][col] = player;
+  }
+
+  let winner = null;
+  for (const combination of WINNING_COMBINATIONS) {
+    const firstSquare = gameBoard[combination[0].row][combination[0].column];
+    const secondSquare = gameBoard[combination[1].row][combination[1].column];
+    const thirdSquare = gameBoard[combination[2].row][combination[2].column];
+
+    if (
+      firstSquare &&
+      firstSquare == secondSquare &&
+      firstSquare == thirdSquare
+    ) {
+      winner = firstSquare;
+    }
+  }
 
   function handleChangePlayer(rowIndex, colIndex) {
     setGameTurns((prevTurns) => {
@@ -42,7 +73,8 @@ function App() {
             classes={currentPlayer === "O" ? "active" : undefined}
           />
         </ol>
-        <Gameboard turns={gameTurns} handleChangePlayer={handleChangePlayer} />
+        {winner && <p>winner is {winner}</p>}
+        <Gameboard board={gameBoard} handleChangePlayer={handleChangePlayer} />
       </div>
       <Log turns={gameTurns} />
     </main>
